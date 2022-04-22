@@ -1,3 +1,8 @@
 .background {
   background-color: black;
 }
+
+.chart-container {
+  width: 80vw;
+  height: 70vh;
+}
