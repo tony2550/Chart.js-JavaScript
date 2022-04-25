@@ -137,17 +137,23 @@
       function scroller(scroll, myChart) {
         // console.log(scroll);
         const dataLength = myChart.data.labels.length;
-        // console.log(dataLength);
+        console.log(dataLength);
         // dataLength 차트에 입력된 데이터셋 길이로 최대길이 구하기.
         if (scroll.deltaY > 0) {
           // 우측으로 이동시에(스크롤 아래로)
-
+          if (myChart.config.options.scales.x.max >= dataLength) {
+            myChart.config.options.scales.x.min = dataLength - 8;
+            myChart.config.options.scales.x.max = dataLength - 1;
+          }
           myChart.config.options.scales.x.min += 1; // 스크롤이 작동해서 이동하면 최소값에 +1해주기
           myChart.config.options.scales.x.max += 1; // 스크롤이 작동해서 이동하면 최대값에 +1해주기
         }
         if (scroll.deltaY < 0) {
           // 좌측으로 이동시에 (스크롤 위로)
-
+          if (myChart.config.options.scales.x.min <= 0) {
+            myChart.config.options.scales.x.min = 0;
+            myChart.config.options.scales.x.max = 7;
+          }
           myChart.config.options.scales.x.min -= 1;
           myChart.config.options.scales.x.max -= 1;
         }
