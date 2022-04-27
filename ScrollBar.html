@@ -117,12 +117,38 @@
       // moveChart plugin block
       const moveChart = {
         id: 'moveChart',
+
+        afterEvent(chart, args) {
+          const {
+            ctx,
+            canvas,
+            chartArea: { left, right, top, bottom, width, height },
+          } = chart;
+
+          canvas.addEventListener('mousemove', (e) => {
+            const x = args.event.x;
+            const y = args.event.y;
+            // console.log(x + ' / ' + y); // x, y 좌표 확인
+            // 마우스가 영역안에 들어왔을 때 실행되어야하기 때문에 mousemove로 이벤트 연결해줄 것
+
+            if (x >= left - 15 && x <= left + 15 && y >= height / 2 + top - 15 && y <= height / 2 + top + 15) {
+              // 원안에 클릭했을때
+              canvas.style.cursor = 'pointer';
+              // console.log('ok, mouse in Left CircleChevron');
+            } else if (x >= right - 15 && x <= right + 15 && y >= height / 2 + top - 15 && y <= height / 2 + top + 15) {
+              canvas.style.cursor = 'pointer';
+              // console.log('ok, mouse in Right CircleChevron');
+            } else {
+              canvas.style.cursor = 'default';
+            }
+          });
+        },
+
         afterDraw(chart, args, pluginOptions) {
           const {
             ctx,
             chartArea: { left, right, top, bottom, width, height },
           } = chart;
-          // console.log(chart);
 
           class CircleChevron {
             // constructor(x1, y1) {}
@@ -142,7 +168,7 @@
               ctx.beginPath();
               ctx.lineWidth = 3;
               ctx.strokeStyle = 'rgba(255, 26, 104, 1)';
-              ctx.moveTo(x1 + pixel, height / 2 + top - 7.5); // pixel 변경
+              ctx.moveTo(x1 + pixel, height / 2 + top - 7.5);
               ctx.lineTo(x1 - pixel, height / 2 + top);
               ctx.lineTo(x1 + pixel, height / 2 + top + 7.5);
               ctx.stroke();
@@ -184,21 +210,18 @@
       const myChart = new Chart(document.getElementById('myChart'), config);
 
       function scroller(scroll, myChart) {
-        // console.log(scroll);
         const dataLength = myChart.data.labels.length;
         console.log(dataLength);
         // dataLength 차트에 입력된 데이터셋 길이로 최대길이 구하기.
         if (scroll.deltaY > 0) {
-          // 우측으로 이동시에(스크롤 아래로)
           if (myChart.config.options.scales.x.max >= dataLength) {
             myChart.config.options.scales.x.min = dataLength - 9;
             myChart.config.options.scales.x.max = dataLength - 1;
           }
-          myChart.config.options.scales.x.min += 1; // 스크롤이 작동해서 이동하면 최소값에 +1해주기
-          myChart.config.options.scales.x.max += 1; // 스크롤이 작동해서 이동하면 최대값에 +1해주기
+          myChart.config.options.scales.x.min += 1;
+          myChart.config.options.scales.x.max += 1;
         }
         if (scroll.deltaY < 0) {
-          // 좌측으로 이동시에 (스크롤 위로)
           if (myChart.config.options.scales.x.min <= 0) {
             myChart.config.options.scales.x.min = 0;
             myChart.config.options.scales.x.max = 8;
@@ -212,6 +235,32 @@
       myChart.canvas.addEventListener('wheel', (e) => {
         scroller(e, myChart);
       });
+
+      function moveScroll() {
+        const {
+          ctx,
+          canvas,
+          chartArea: { left, right, top, bottom, width, height },
+        } = myChart;
+        canvas.addEventListener('click', (event) => {
+          console.log('click ok');
+          const rect = canvas.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          console.log('x = ' + x + ' / y = ' + y);
+          if (x >= right - 15 && x <= right + 15 && y >= height / 2 + top - 15 && y <= height / 2 + top + 15) {
+            myChart.options.scales.x.min += 7;
+            myChart.options.scales.x.max += 7;
+          } else if (x >= left - 15 && x <= left + 15 && y >= height / 2 + top - 15 && y <= height / 2 + top + 15) {
+            myChart.options.scales.x.min -= 7;
+            myChart.options.scales.x.max -= 7;
+          }
+          myChart.update();
+        });
+      }
+
+      myChart.ctx.onclick = moveScroll();
     </script>
   </body>
 </html>
