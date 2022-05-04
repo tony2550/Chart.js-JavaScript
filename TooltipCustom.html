@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Getting Started with Chart JS with www.chartjs3.com</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu {
+        width: 100vw;
+        height: 40px;
+        background: #1a1a1a;
+        color: rgba(255, 26, 104, 1);
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        background: rgba(255, 26, 104, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(255, 26, 104, 1);
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chartMenu">
+      <p>WWW.CHARTJS3.COM (Chart JS 3.7.1)</p>
+    </div>
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // setup
+      const data = {
+        labels: ['Red', 'blue', 'yellow', 'green', 'purple', 'aqua', 'navy'],
+        datasets: [
+          {
+            label: 'color vote',
+            data: [22, 10, 7, 8, 12, 3, 9],
+            backgroundColor: ['Red', 'blue', 'yellow', 'green', 'purple', 'aqua', 'navy'],
+            borderColor: ['Red', 'blue', 'yellow', 'green', 'purple', 'aqua', 'navy'],
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      // custom tooltip
+      const getOrCreateTooltip = (chart) => {
+        let tooltipEL = chart.canvas.parentNode.querySelector('div');
+        if (!tooltipEL) {
+          tooltipEL = document.createElement('DIV');
+          tooltipEL.classList.add('tooltipDesign');
+
+          tooltipUL = document.createElement('UL');
+          tooltipUL.classList.add('tooltipUl');
+
+          //append to parent
+          tooltipEL.appendChild(tooltipUL);
+          chart.canvas.parentNode.appendChild(tooltipEL);
+          console.log(chart.canvas.parentNode);
+        }
+        return tooltipEL;
+        //     <canvas>
+        //   <div class="cssclass">
+        //     <ul class="abc"></ul>
+        //   </div>
+        //   </canvas>
+      };
+      // 1 trigger
+      const externalTooltipHandler = (context) => {
+        const { chart, tooltip } = context;
+        // console.log(chart);
+        const tooltipEL = getOrCreateTooltip(chart);
+      };
+
+      // config
+      const config = {
+        type: 'line',
+        data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+          plugins: {
+            tooltip: {
+              enabled: false,
+              external: externalTooltipHandler,
+            },
+          },
+        },
+      };
+
+      // render init block
+      const myChart = new Chart(document.getElementById('myChart'), config);
+    </script>
+  </body>
+</html>
